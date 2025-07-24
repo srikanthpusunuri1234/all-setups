@@ -1,0 +1,17 @@
+#!/bin/bash
+REPO_URL="https://github.com/username/repo.git"
+TARGET_DIR="/home/ubuntu/repo"
+EXPORT_DIR="/home/ubuntu/all-branches"
+
+# Clone
+git clone $REPO_URL $TARGET_DIR
+cd $TARGET_DIR
+git fetch --all
+
+mkdir -p $EXPORT_DIR
+
+for branch in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | grep -v 'HEAD'); do
+  local_branch=${branch#origin/}
+  echo "Exporting $local_branch..."
+  git worktree add "$EXPORT_DIR/$local_branch" "$branch"
+done
